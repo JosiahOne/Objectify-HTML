@@ -88,18 +88,32 @@ fn get_replacement_id(input_data: String, start_index: i32) -> String {
     let mut label = String::new();
     let mut counter = 0;
     let mut alt_counter = 0;
-    let to_match = vec!['o', 'b', 'j', 'e', 'c', 't', '='. '"'];
-
+    let to_match = vec!['o', 'b', 'j', 'e', 'c', 't', '=', '"'];
+    let mut should_match = true;
+    let mut should_continue = true;
     
     for car in input_data.chars() {
-        if counter > start_index && alt_counter != -1 {
-            if car != to_match[alt_counter] {
-                alt_counter = -2; // Will become -1 after this if statement.
+        if counter > start_index && should_continue {
+            if alt_counter + 1 > to_match.len() {
+                // Start
+                should_match = false;
+                
+                if car == '"' {
+                    break;
+                }
+                
+                label.push_str(&*car.to_string());
+            }
+        
+            if should_match && car != to_match[alt_counter] {
+                should_continue = false;
             }
             alt_counter += 1;
         }
         counter += 1;
     }
+    
+    return label;
 }
 
 fn get_file_contents(p: &str) -> String {
