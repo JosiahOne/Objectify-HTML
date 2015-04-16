@@ -52,7 +52,7 @@ fn inline_replace_html_file(main_file: String) {
             // Tag. Find tag name.
             if get_tag_name(main_file.clone(), index) == "include" {
                 // Get the replacement name.
-                
+                let replacement_name = get_replacement_id(main_file.clone(), index);
             }
         }
         
