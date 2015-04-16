@@ -41,10 +41,10 @@ fn main() {
     
     let main_file = get_file_contents(&*compile_option); // :String
 
-    inline_replace_html_file(main_file);
+    inline_replace_html_file(main_file, build_option);
 }
 
-fn inline_replace_html_file(main_file: String) {
+fn inline_replace_html_file(main_file: String, build_loc: String) {
     let mut index: i32 = 0;
     let mut tag_name = String::new();
     for car in main_file.chars() {
@@ -54,11 +54,26 @@ fn inline_replace_html_file(main_file: String) {
             if tag_name == "include" {
                 // Get the replacement name.
                 let replacement_name = get_replacement_id(main_file.clone(), index + tag_name.len() as i32 + 1);
+                
             }
         }
         
         index += 1;
     }
+}
+
+fn get_new_data(replacement_id: String, build_loc: String) -> String {
+    // build_loc is a file that we need to read so that we can get the locations of our .ohtml files.
+    let build_file_contents = get_file_contents(&*build_loc);
+    let files: Vec<String> = Vec::<String>::new();
+    
+    return "".to_string();
+}
+
+fn get_substrings_from_delims(main_string: String, delim: String) -> Vec<String> {
+    let substrings: Vec<String> = Vec::<String>::new();
+    
+    return substrings;
 }
 
 fn get_tag_name(input_data: String, start_index: i32) -> String {
