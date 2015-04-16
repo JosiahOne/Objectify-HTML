@@ -46,14 +46,14 @@ fn main() {
 
 fn inline_replace_html_file(main_file: String) {
     let mut index = 0;
-    let mut tempWriteBuffer: &str = "";
-    let mut write_char: bool = false;
-    
-    
+
     for car in main_file.chars() {
         if car == '<' {
             // Tag. Find tag name.
-            write_char = true;
+            if get_tag_name(main_file.clone(), index) == "include" {
+                // Get the replacement name.
+                
+            }
         }
         
         index += 1;
@@ -61,7 +61,45 @@ fn inline_replace_html_file(main_file: String) {
 }
 
 fn get_tag_name(input_data: String, start_index: i32) -> String {
+    // Starting at the start_index, collect characters until we hit the ' '.
     
+    let mut name = String::new();
+    let mut counter = 0;
+    
+    for car in input_data.chars() {
+        if counter > start_index {
+            if car != ' ' {
+                name.push_str(&*car.to_string());
+            } else {
+                break;
+            }
+        }
+        counter += 1;
+    }
+    
+    return name;
+}
+
+fn get_replacement_id(input_data: String, start_index: i32) -> String {
+    // We're looking for object="foo". Specifically:
+    // Check that the next 8 chars == object=" and then, 
+    // Capture chars in a string until a " appears.
+    
+    let mut label = String::new();
+    let mut counter = 0;
+    let mut alt_counter = 0;
+    let to_match = vec!['o', 'b', 'j', 'e', 'c', 't', '='. '"'];
+
+    
+    for car in input_data.chars() {
+        if counter > start_index && alt_counter != -1 {
+            if car != to_match[alt_counter] {
+                alt_counter = -2; // Will become -1 after this if statement.
+            }
+            alt_counter += 1;
+        }
+        counter += 1;
+    }
 }
 
 fn get_file_contents(p: &str) -> String {
