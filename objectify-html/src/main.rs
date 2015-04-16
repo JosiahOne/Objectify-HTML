@@ -45,14 +45,15 @@ fn main() {
 }
 
 fn inline_replace_html_file(main_file: String) {
-    let mut index = 0;
-
+    let mut index: i32 = 0;
+    let mut tag_name = String::new();
     for car in main_file.chars() {
         if car == '<' {
             // Tag. Find tag name.
-            if get_tag_name(main_file.clone(), index) == "include" {
+            tag_name = get_tag_name(main_file.clone(), index);
+            if tag_name == "include" {
                 // Get the replacement name.
-                let replacement_name = get_replacement_id(main_file.clone(), index);
+                let replacement_name = get_replacement_id(main_file.clone(), index + tag_name.len() as i32 + 1);
             }
         }
         
@@ -94,6 +95,8 @@ fn get_replacement_id(input_data: String, start_index: i32) -> String {
     
     for car in input_data.chars() {
         if counter > start_index && should_continue {
+            println!("START {}", car);
+
             if alt_counter + 1 > to_match.len() {
                 // Start
                 should_match = false;
