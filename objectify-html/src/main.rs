@@ -1,27 +1,70 @@
 use std::env;
+use std::path::Path;
+use std::error::Error;
+use std::fs::File;
+use std::io::Read;
 
 fn main() {
     let args: Vec<_> = env::args().collect();
-    let mut compile_option = "";
-    let mut build_option = "";
+    let mut compile_option = String::new();
+    let mut build_option = String::new();
+    let mut add_c_option = false;
+    let mut add_b_option = false;
     
-    let mut index_counter = 0;
     for i in args {
-        if i == "-c" && index_counter + 1 <= args.len() {
-            compile_option = args[index_counter + 1];
-        } else if i == "-b" && index_counter + 1 <= args.len() {
-            build_option = args[index_counter + 1];
+        if add_c_option {
+            compile_option = i.clone();
+            add_c_option = false;
+        } else if add_b_option {
+            build_option = i.clone();
+            add_b_option = false;
         }
         
-        index_counter++;
+        if i == "-c" {
+            add_c_option = true;
+        } else if i == "-b" {
+            add_b_option = true;
+        }
+    }
+    // !!! EARLY RETURNS !!!
+    // If a compile_option was not supplied, we can't continue.
+    if compile_option == "" {
+        println!("No compile (-c) option was supplied! Aborting.");
+        return;
+    }
+    // !!! END EARLY RETURNS !!!
+    
+    if build_option == "" {
+        build_option = ".build".to_string();
     }
     
-    let main_file = get_main_file(compile_option);
     
+    let main_file = get_file_contents(&*compile_option); // :String
+
+    inline_replace_html_file(main_file);
+}
+
+fn inline_replace_html_file(main_file: String) {
+    let mut index = 0;
+    let mut tempWriteBuffer: &str = "";
+    let mut write_char: bool = false;
+    
+    
+    for car in main_file.chars() {
+        if car == '<' {
+            // Tag. Find tag name.
+            write_char = true;
+        }
+        
+        index += 1;
+    }
+}
+
+fn get_tag_name(input_data: String, start_index: i32) -> String {
     
 }
 
-fn get_main_file(p: String) {
+fn get_file_contents(p: &str) -> String {
     // Create a path to the desired file
     let path = Path::new(p);
     let display = path.display();
@@ -41,8 +84,8 @@ fn get_main_file(p: String) {
         Err(why) => panic!("couldn't read {}: {}", display,
                                                    Error::description(&why)),
         Ok(_) => print!("{} contains:\n{}", display, s),
-    }
-
+    };
+    
     // `file` goes out of scope, and the "hello.txt" file gets closed
-
+    return s;
 }
