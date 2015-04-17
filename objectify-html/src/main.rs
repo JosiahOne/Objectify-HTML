@@ -65,7 +65,7 @@ fn inline_replace_html_file(main_file: String, build_loc: String) {
 fn get_new_data(replacement_id: String, build_loc: String) -> String {
     // build_loc is a file that we need to read so that we can get the locations of our .ohtml files.
     let build_file_contents = get_file_contents(&*build_loc);
-    let files: Vec<String> = Vec::<String>::new();
+    let files: Vec<String> = get_substrings_from_delims(build_file_contents, '[', ']');
     
     return "".to_string();
 }
