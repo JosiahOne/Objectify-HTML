@@ -70,8 +70,25 @@ fn get_new_data(replacement_id: String, build_loc: String) -> String {
     return "".to_string();
 }
 
-fn get_substrings_from_delims(main_string: String, delim: String) -> Vec<String> {
-    let substrings: Vec<String> = Vec::<String>::new();
+fn get_substrings_from_delims(main_string: String, start_delim: char, end_delim: char) -> Vec<String> {
+    let mut substrings: Vec<String> = Vec::<String>::new();
+    
+    let mut currently_matching = false;
+    let mut temp_data = String::new();
+    
+    for car in main_string.chars() {
+        if currently_matching && car != end_delim {
+            temp_data.push_str(&*car.to_string());
+        } else if car == end_delim {
+            currently_matching = false;
+            substrings.push(temp_data);
+            temp_data = "".to_string();
+        }
+        
+        if car == start_delim && !currently_matching {
+            currently_matching = true;
+        }
+    }
     
     return substrings;
 }
@@ -110,7 +127,6 @@ fn get_replacement_id(input_data: String, start_index: i32) -> String {
     
     for car in input_data.chars() {
         if counter > start_index && should_continue {
-            println!("START {}", car);
 
             if alt_counter + 1 > to_match.len() {
                 // Start
