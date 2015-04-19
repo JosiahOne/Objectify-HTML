@@ -4,6 +4,11 @@ use std::error::Error;
 use std::fs::File;
 use std::io::Read;
 
+struct Valid_Data {
+    exists: bool,
+    data: String,
+}
+
 fn main() {
     let args: Vec<_> = env::args().collect();
     let mut compile_option = String::new();
@@ -47,6 +52,8 @@ fn main() {
 fn inline_replace_html_file(main_file: String, build_loc: String) {
     let mut index: i32 = 0;
     let mut tag_name = String::new();
+    let mut new_data = String::new();
+    
     for car in main_file.chars() {
         if car == '<' {
             // Tag. Find tag name.
@@ -54,7 +61,7 @@ fn inline_replace_html_file(main_file: String, build_loc: String) {
             if tag_name == "include" {
                 // Get the replacement name.
                 let replacement_name = get_replacement_id(main_file.clone(), index + tag_name.len() as i32 + 1);
-                
+                new_data = get_new_data(replacement_name, build_loc.clone());
             }
         }
         
@@ -67,7 +74,35 @@ fn get_new_data(replacement_id: String, build_loc: String) -> String {
     let build_file_contents = get_file_contents(&*build_loc);
     let files: Vec<String> = get_substrings_from_delims(build_file_contents, '[', ']');
     
+    for each in files {
+        // We're searching each file for the replacement_id now.
+        let file_contents = get_file_contents(&*each);
+        
+    }
+    
     return "".to_string();
+}
+
+fn does_replacement_exist(file: String, replacement_id: String) -> Valid_Data {
+    // Return the valid replacement string if it exists, otherwise, Valid_Data.exists should be false and
+    // the developer should verify that before reading the Valid_Data.data.
+    
+    let mut indexer = 0;
+    let mut tag_name = String::New();
+    let mut return_data = Valid_Data{exists: false, data: ""};
+    for car in file {
+        if car == '<' {
+            tag_name = get_tag_name(file.clone(), indexer);
+            if tag_name == "begin" {
+                let replacement_name = get_replacement_id(file.clone(), indexer + tag_name.len() as i32 + 1);
+                if replacement_name == replacement_id {
+                    // Found the replacement. Get its content and return.
+                    return_data.exists == true;
+                }
+            }
+        }
+        indexer += 1;
+    }
 }
 
 fn get_substrings_from_delims(main_string: String, start_delim: char, end_delim: char) -> Vec<String> {
