@@ -5,5 +5,5 @@ cp -r * ../OutputDir/
 
 for i in *;
 do
-    objectify-html -c &i;
+    objectify-html -c &i >> &i;
 done;
