@@ -4,7 +4,7 @@ use std::error::Error;
 use std::fs::File;
 use std::io::prelude::*;
 
-struct Valid_Data {
+struct ValidData {
     exists: bool,
     data: String,
 }
@@ -53,11 +53,10 @@ fn main() {
 
 fn inline_replace_html_file(main_file: String, build_loc: String) -> String {
     let mut index: i32 = 0;
-    let mut tag_name = String::new();
-    let mut new_data = String::new();
+    let mut tag_name;
+    let mut new_data;
     let mut mut_main = String::new();
     let mut alt_mut_main = main_file.clone();
-    let mut flag = true;
     let mut while_flag = true;
     while while_flag {
         if alt_mut_main == mut_main {
@@ -65,7 +64,7 @@ fn inline_replace_html_file(main_file: String, build_loc: String) -> String {
         } else {
             mut_main = alt_mut_main.clone();
             for car in mut_main.chars() {
-                if car == '<' && flag {
+                if car == '<'{
                     // Tag. Find tag name.
                     tag_name = get_tag_name(mut_main.clone(), index);
                     if tag_name == "include" {
@@ -113,7 +112,7 @@ fn get_new_data(replacement_id: String, build_loc: String) -> String {
     // build_loc is a file that we need to read so that we can get the locations of our .ohtml files.
     let build_file_contents = get_file_contents(&*build_loc);
     let files: Vec<String> = get_substrings_from_delims(build_file_contents, '[', ']');
-    let mut some_valid_data = Valid_Data{exists: false, data: "ERROR".to_string()};
+    let mut some_valid_data;
     let mut final_return_data = String::new();
     let mut flag = true;
     for each in files {
@@ -131,13 +130,13 @@ fn get_new_data(replacement_id: String, build_loc: String) -> String {
     return final_return_data;
 }
 
-fn does_replacement_exist(file: String, replacement_id: String) -> Valid_Data {
-    // Return the valid replacement string if it exists, otherwise, Valid_Data.exists should be false and
-    // the developer should verify that before reading the Valid_Data.data.
+fn does_replacement_exist(file: String, replacement_id: String) -> ValidData {
+    // Return the valid replacement string if it exists, otherwise, ValidData.exists should be false and
+    // the developer should verify that before reading the ValidData.data.
     
     let mut indexer = 0;
-    let mut tag_name = String::new();
-    let mut return_data = Valid_Data{exists: false, data: "".to_string()};
+    let mut tag_name;
+    let mut return_data = ValidData{exists: false, data: "".to_string()};
     let mut flag = true;
     for car in file.chars() {
         if car == '<' && flag {
@@ -161,7 +160,7 @@ fn does_replacement_exist(file: String, replacement_id: String) -> Valid_Data {
 fn get_replacement_data(file_contents: String, start_pos: i32) -> String {
     let mut read_data = String::new();
     let mut indexer = 0;
-    let mut tag_name = String::new();
+    let mut tag_name;
     let mut flag = true;
     for car in file_contents.chars() {
         if indexer > start_pos && flag == true {
@@ -287,9 +286,4 @@ fn get_file_contents(p: &str) -> String {
     
     // `file` goes out of scope, and the "hello.txt" file gets closed
     return s;
-}
-
-fn write_to_file(data: String, file_name: String) {
-    let mut f = File::create(file_name.to_string());
-    f.unwrap().write_all(data.as_bytes());
 }
