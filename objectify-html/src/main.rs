@@ -62,6 +62,7 @@ fn inline_replace_html_file(main_file: String, build_loc: String) {
                 // Get the replacement name.
                 let replacement_name = get_replacement_id(main_file.clone(), index + tag_name.len() as i32 + 1);
                 new_data = get_new_data(replacement_name, build_loc.clone());
+                println!("New Data = {}", new_data);
             }
         }
         
@@ -73,14 +74,22 @@ fn get_new_data(replacement_id: String, build_loc: String) -> String {
     // build_loc is a file that we need to read so that we can get the locations of our .ohtml files.
     let build_file_contents = get_file_contents(&*build_loc);
     let files: Vec<String> = get_substrings_from_delims(build_file_contents, '[', ']');
-    
+    let mut some_valid_data = Valid_Data{exists: false, data: "".to_string()};
+    let mut final_return_data = String::new();
+    let mut flag = true;
     for each in files {
-        // We're searching each file for the replacement_id now.
-        let file_contents = get_file_contents(&*each);
-        
+        if flag {
+            // We're searching each file for the replacement_id now.
+            let file_contents = get_file_contents(&*each);
+            some_valid_data = does_replacement_exist(file_contents.clone(), replacement_id.clone());
+            if some_valid_data.exists {
+                final_return_data = some_valid_data.data;
+                flag = false;
+            }
+        }
     }
     
-    return "".to_string();
+    return final_return_data;
 }
 
 fn does_replacement_exist(file: String, replacement_id: String) -> Valid_Data {
