@@ -88,9 +88,9 @@ fn does_replacement_exist(file: String, replacement_id: String) -> Valid_Data {
     // the developer should verify that before reading the Valid_Data.data.
     
     let mut indexer = 0;
-    let mut tag_name = String::New();
-    let mut return_data = Valid_Data{exists: false, data: ""};
-    for car in file {
+    let mut tag_name = String::new();
+    let mut return_data = Valid_Data{exists: false, data: "".to_string()};
+    for car in file.chars() {
         if car == '<' {
             tag_name = get_tag_name(file.clone(), indexer);
             if tag_name == "begin" {
@@ -98,11 +98,14 @@ fn does_replacement_exist(file: String, replacement_id: String) -> Valid_Data {
                 if replacement_name == replacement_id {
                     // Found the replacement. Get its content and return.
                     return_data.exists == true;
+                    
                 }
             }
         }
         indexer += 1;
     }
+    
+    return return_data;
 }
 
 fn get_substrings_from_delims(main_string: String, start_delim: char, end_delim: char) -> Vec<String> {
