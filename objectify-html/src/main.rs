@@ -2,7 +2,7 @@ use std::env;
 use std::path::Path;
 use std::error::Error;
 use std::fs::File;
-use std::io::Read;
+use std::io::prelude::*;
 
 struct Valid_Data {
     exists: bool,
@@ -48,7 +48,7 @@ fn main() {
 
     let data_to_write = inline_replace_html_file(main_file, build_option);
     
-    println!("\n\n {}", data_to_write);
+    write_to_file(data_to_write, "Testing.html".to_string()); 
 }
 
 fn inline_replace_html_file(main_file: String, build_loc: String) -> String {
@@ -288,4 +288,9 @@ fn get_file_contents(p: &str) -> String {
     
     // `file` goes out of scope, and the "hello.txt" file gets closed
     return s;
+}
+
+fn write_to_file(data: String, file_name: String) {
+    let mut f = File::create(file_name.to_string());
+    f.unwrap().write_all(data.as_bytes());
 }
