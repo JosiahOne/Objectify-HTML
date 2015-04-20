@@ -48,7 +48,7 @@ fn main() {
 
     let data_to_write = inline_replace_html_file(main_file, build_option);
     
-    write_to_file(data_to_write, "Testing.html".to_string()); 
+    println!("{}", data_to_write);
 }
 
 fn inline_replace_html_file(main_file: String, build_loc: String) -> String {
@@ -72,7 +72,6 @@ fn inline_replace_html_file(main_file: String, build_loc: String) -> String {
                         // Get the replacement name.
                         let replacement_name = get_replacement_id(mut_main.clone(), index + tag_name.len() as i32 + 1);
                         new_data = get_new_data(replacement_name, build_loc.clone());
-                        println!("New Data = {}", new_data);
                         if new_data != "ERROR" {
                             alt_mut_main = remove_substring_at_pos(mut_main.clone(), index, index + tag_name.len() as i32 + 17);        
                             alt_mut_main = insert_substring_at_pos(alt_mut_main.clone(), new_data, index);
@@ -283,7 +282,7 @@ fn get_file_contents(p: &str) -> String {
     match file.read_to_string(&mut s) {
         Err(why) => panic!("couldn't read {}: {}", display,
                                                    Error::description(&why)),
-        Ok(_) => print!("{} contains:\n{}", display, s),
+        Ok(_) => print!(""),
     };
     
     // `file` goes out of scope, and the "hello.txt" file gets closed
