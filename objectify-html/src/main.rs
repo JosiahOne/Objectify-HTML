@@ -108,7 +108,7 @@ fn does_replacement_exist(file: String, replacement_id: String) -> Valid_Data {
                 if replacement_name == replacement_id {
                     // Found the replacement. Get its content and return.
                     return_data.exists = true;
-                    return_data.data = get_replacement_data(file.clone(), indexer + tag_name.len() as i32 + replacement_id.len() as i32 + 1);
+                    return_data.data = get_replacement_data(file.clone(), indexer + tag_name.len() as i32 + replacement_id.len() as i32 + 11);
                     flag = false;
                 }
             }
@@ -128,9 +128,9 @@ fn get_replacement_data(file_contents: String, start_pos: i32) -> String {
         if indexer > start_pos && flag == true {
             if car == '<' {
                 tag_name = get_tag_name(file_contents.clone(), indexer);
-                if tag_name == "/begin" {
+                if tag_name == "/begin".to_string() {
                     // STOP READING
-                    flag == false;
+                    flag = false;
                 }
             }
             
