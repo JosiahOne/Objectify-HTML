@@ -90,15 +90,17 @@ fn does_replacement_exist(file: String, replacement_id: String) -> Valid_Data {
     let mut indexer = 0;
     let mut tag_name = String::new();
     let mut return_data = Valid_Data{exists: false, data: "".to_string()};
+    let mut flag = true;
     for car in file.chars() {
-        if car == '<' {
+        if car == '<' && flag {
             tag_name = get_tag_name(file.clone(), indexer);
             if tag_name == "begin" {
                 let replacement_name = get_replacement_id(file.clone(), indexer + tag_name.len() as i32 + 1);
                 if replacement_name == replacement_id {
                     // Found the replacement. Get its content and return.
-                    return_data.exists == true;
-                    
+                    return_data.exists = true;
+                    return_data.data = get_replacement_data(file.clone(), indexer + tag_name.len() as i32 + replacement_id.len() as i32 + 1);
+                    flag = false;
                 }
             }
         }
@@ -106,6 +108,31 @@ fn does_replacement_exist(file: String, replacement_id: String) -> Valid_Data {
     }
     
     return return_data;
+}
+
+fn get_replacement_data(file_contents: String, start_pos: i32) -> String {
+    let mut read_data = String::new();
+    let mut indexer = 0;
+    let mut tag_name = String::new();
+    let mut flag = true;
+    for car in file_contents.chars() {
+        if indexer > start_pos && flag == true {
+            if car == '<' {
+                tag_name = get_tag_name(file_contents.clone(), indexer);
+                if tag_name == "/begin" {
+                    // STOP READING
+                    flag == false;
+                }
+            }
+            
+            if flag {
+                read_data.push_str(&*car.to_string());
+            }
+        }
+        indexer += 1;
+    }
+    
+    return read_data;
 }
 
 fn get_substrings_from_delims(main_string: String, start_delim: char, end_delim: char) -> Vec<String> {
