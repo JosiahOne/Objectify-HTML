@@ -46,35 +46,75 @@ fn main() {
     
     let main_file = get_file_contents(&*compile_option); // :String
 
-    inline_replace_html_file(main_file, build_option);
+    let data_to_write = inline_replace_html_file(main_file, build_option);
+    
+    println!("\n\n {}", data_to_write);
 }
 
-fn inline_replace_html_file(main_file: String, build_loc: String) {
+fn inline_replace_html_file(main_file: String, build_loc: String) -> String {
     let mut index: i32 = 0;
     let mut tag_name = String::new();
     let mut new_data = String::new();
-    
-    for car in main_file.chars() {
-        if car == '<' {
-            // Tag. Find tag name.
-            tag_name = get_tag_name(main_file.clone(), index);
-            if tag_name == "include" {
-                // Get the replacement name.
-                let replacement_name = get_replacement_id(main_file.clone(), index + tag_name.len() as i32 + 1);
-                new_data = get_new_data(replacement_name, build_loc.clone());
-                println!("New Data = {}", new_data);
+    let mut mut_main = String::new();
+    let mut alt_mut_main = main_file.clone();
+    let mut flag = true;
+    let mut while_flag = true;
+    while while_flag {
+        if alt_mut_main == mut_main {
+            while_flag = false;
+        } else {
+            mut_main = alt_mut_main.clone();
+            for car in mut_main.chars() {
+                if car == '<' && flag {
+                    // Tag. Find tag name.
+                    tag_name = get_tag_name(mut_main.clone(), index);
+                    if tag_name == "include" {
+                        // Get the replacement name.
+                        let replacement_name = get_replacement_id(mut_main.clone(), index + tag_name.len() as i32 + 1);
+                        new_data = get_new_data(replacement_name, build_loc.clone());
+                        println!("New Data = {}", new_data);
+                        if new_data != "ERROR" {
+                            alt_mut_main = remove_substring_at_pos(mut_main.clone(), index, index + tag_name.len() as i32 + 17);        
+                            alt_mut_main = insert_substring_at_pos(alt_mut_main.clone(), new_data, index);
+                            break;
+                        }
+                    }
+                }
+                
+                index += 1;
             }
         }
-        
-        index += 1;
     }
+    
+    return mut_main;
+}
+
+fn insert_substring_at_pos(main_string: String, substring: String, start_pos: i32 ) -> String {
+    let mut indexer = start_pos;
+    let mut return_string = main_string.clone();
+    for car in substring.chars() {
+        return_string.insert(indexer as usize, car);
+        indexer += 1;
+    }
+    
+    return return_string;
+}
+
+fn remove_substring_at_pos(main_string: String, start_pos: i32, end_pos: i32) -> String {
+    let mut new_string = main_string;
+    
+    for i in start_pos..end_pos {
+        new_string.remove(start_pos as usize);
+    }
+    
+    return new_string;
 }
 
 fn get_new_data(replacement_id: String, build_loc: String) -> String {
     // build_loc is a file that we need to read so that we can get the locations of our .ohtml files.
     let build_file_contents = get_file_contents(&*build_loc);
     let files: Vec<String> = get_substrings_from_delims(build_file_contents, '[', ']');
-    let mut some_valid_data = Valid_Data{exists: false, data: "".to_string()};
+    let mut some_valid_data = Valid_Data{exists: false, data: "ERROR".to_string()};
     let mut final_return_data = String::new();
     let mut flag = true;
     for each in files {
