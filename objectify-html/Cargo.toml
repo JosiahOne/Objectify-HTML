@@ -2,3 +2,8 @@
 name = "objectify-html"
 version = "0.0.1"
 authors = ["root"]
+[package]
+name = "objectify-html"
+version = "0.0.1"
+authors = ["root"]
+
