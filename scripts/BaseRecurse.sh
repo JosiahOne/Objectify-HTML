@@ -2,8 +2,8 @@
 
 mkdir ../OutputDir
 cp -r . ../OutputDir/
-
-for i in ../OutputDir/*.html;
+cd ../OutputDir/
+for i in $(find . -name '*.html');
 do
     objectify-html -c "$i" >> "$i 2";
     rm "$i";
