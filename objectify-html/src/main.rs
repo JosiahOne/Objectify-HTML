@@ -70,9 +70,10 @@ fn inline_replace_html_file(main_file: String, build_loc: String) -> String {
                     if tag_name == "include" {
                         // Get the replacement name.
                         let replacement_name = get_replacement_id(mut_main.clone(), index + tag_name.len() as i32 + 1);
+                        let replace_name_back = replacement_name.clone();
                         new_data = get_new_data(replacement_name, build_loc.clone());
                         if new_data != "ERROR" {
-                            alt_mut_main = remove_substring_at_pos(mut_main.clone(), index, index + tag_name.len() as i32 + 26);        
+                            alt_mut_main = remove_substring_at_pos(mut_main.clone(), index, index + tag_name.len() as i32 + replace_name_back.len() as i32 + 13);
                             alt_mut_main = insert_substring_at_pos(alt_mut_main.clone(), new_data, index);
                             index = 0;
                             break;
