@@ -64,7 +64,7 @@ fn inline_replace_html_file(main_file: String, build_loc: String) -> String {
         } else {
             mut_main = alt_mut_main.clone();
             for car in mut_main.chars() {
-                if car == '<'{
+                if car == '<' {
                     // Tag. Find tag name.
                     tag_name = get_tag_name(mut_main.clone(), index);
                     if tag_name == "include" {
@@ -72,8 +72,9 @@ fn inline_replace_html_file(main_file: String, build_loc: String) -> String {
                         let replacement_name = get_replacement_id(mut_main.clone(), index + tag_name.len() as i32 + 1);
                         new_data = get_new_data(replacement_name, build_loc.clone());
                         if new_data != "ERROR" {
-                            alt_mut_main = remove_substring_at_pos(mut_main.clone(), index, index + tag_name.len() as i32 + 25);        
+                            alt_mut_main = remove_substring_at_pos(mut_main.clone(), index, index + tag_name.len() as i32 + 26);        
                             alt_mut_main = insert_substring_at_pos(alt_mut_main.clone(), new_data, index);
+                            index = 0;
                             break;
                         }
                     }
