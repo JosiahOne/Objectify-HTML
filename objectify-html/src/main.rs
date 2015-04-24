@@ -69,11 +69,10 @@ fn inline_replace_html_file(main_file: String, build_loc: String) -> String {
                     if tag_name == "include" {
                         // Get the replacement name.
                         let replacement_name = get_replacement_id(mut_main.clone(), index + tag_name.len() as i32 + 1);
-                        let replace_name_back = replacement_name.clone();
-                        let whitespace_count = get_whitespace_count_in_tag(mut_main.clone(), index);
+                        let tag_length = get_total_tag_length(mut_main.clone(), index);
                         new_data = get_new_data(replacement_name, build_loc.clone());
                         if new_data != "ERROR" {
-                            alt_mut_main = remove_substring_at_pos(mut_main.clone(), index, index + tag_name.len() as i32 + replace_name_back.len() as i32 + whitespace_count + 12);
+                            alt_mut_main = remove_substring_at_pos(mut_main.clone(), index, index + tag_length);
                             alt_mut_main = insert_substring_at_pos(alt_mut_main.clone(), new_data, index);
                             index = 0;
                             break;
@@ -122,6 +121,7 @@ fn get_entire_tag(data: String, start_pos: i32) -> String {
       
         if indexer >= start_pos && flag {
             if car == '>' {
+                return_data.push_str(&*car.to_string());
                 flag = false;
             } else {
                 return_data.push_str(&*car.to_string());
@@ -132,27 +132,6 @@ fn get_entire_tag(data: String, start_pos: i32) -> String {
     }
     
     return return_data;
-}
-
-fn get_whitespace_count_in_tag(data: String, start_pos: i32) -> i32 {
-    // Loop through until we hit a '>'. Increment a counter every time we hit white space.
-    let mut counter = 0;
-    let mut indexer = 0;
-    let mut flag = true;
-    for car in data.chars() {
-      
-        if indexer > start_pos && flag {
-            if car == '>' {
-                flag = false;
-            } else if car == ' ' {
-              counter += 1;
-            }
-        }
-      
-        indexer += 1;
-    }
-    
-    return counter;
 }
 
 fn get_new_data(replacement_id: String, build_loc: String) -> String {
