@@ -43,7 +43,6 @@ fn main() {
         build_option = ".build".to_string();
     }
     
-    
     let main_file = get_file_contents(&*compile_option); // :String
 
     let data_to_write = inline_replace_html_file(main_file, build_option);
@@ -71,9 +70,10 @@ fn inline_replace_html_file(main_file: String, build_loc: String) -> String {
                         // Get the replacement name.
                         let replacement_name = get_replacement_id(mut_main.clone(), index + tag_name.len() as i32 + 1);
                         let replace_name_back = replacement_name.clone();
+                        let whitespace_count = get_whitespace_count_in_tag(mut_main.clone(), index);
                         new_data = get_new_data(replacement_name, build_loc.clone());
                         if new_data != "ERROR" {
-                            alt_mut_main = remove_substring_at_pos(mut_main.clone(), index, index + tag_name.len() as i32 + replace_name_back.len() as i32 + 13);
+                            alt_mut_main = remove_substring_at_pos(mut_main.clone(), index, index + tag_name.len() as i32 + replace_name_back.len() as i32 + whitespace_count + 12);
                             alt_mut_main = insert_substring_at_pos(alt_mut_main.clone(), new_data, index);
                             index = 0;
                             break;
@@ -108,6 +108,27 @@ fn remove_substring_at_pos(main_string: String, start_pos: i32, end_pos: i32) ->
     }
     
     return new_string;
+}
+
+fn get_whitespace_count_in_tag(data: String, start_pos: i32) -> i32 {
+    // Loop through until we hit a '>'. Increment a counter every time we hit white space.
+    let mut counter = 0;
+    let mut indexer = 0;
+    let mut flag = true;
+    for car in data.chars() {
+      
+        if indexer > start_pos && flag {
+            if car == '>' {
+                flag = false;
+            } else if car == ' ' {
+              counter += 1;
+            }
+        }
+      
+        indexer += 1;
+    }
+    
+    return counter;
 }
 
 fn get_new_data(replacement_id: String, build_loc: String) -> String {
