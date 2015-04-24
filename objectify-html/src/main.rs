@@ -80,7 +80,6 @@ fn inline_replace_html_file(main_file: String, build_loc: String) -> String {
                         }
                     }
                 }
-                
                 index += 1;
             }
         }
@@ -108,6 +107,31 @@ fn remove_substring_at_pos(main_string: String, start_pos: i32, end_pos: i32) ->
     }
     
     return new_string;
+}
+
+fn get_total_tag_length(data: String, start_pos: i32) -> i32 {
+    let value = get_entire_tag(data.clone(), start_pos).len() as i32;
+    return value;
+}
+
+fn get_entire_tag(data: String, start_pos: i32) -> String {
+    let mut indexer = 0;
+    let mut return_data = String::new();
+    let mut flag = true;
+    for car in data.chars() {
+      
+        if indexer >= start_pos && flag {
+            if car == '>' {
+                flag = false;
+            } else {
+                return_data.push_str(&*car.to_string());
+            }
+        }
+      
+        indexer += 1;
+    }
+    
+    return return_data;
 }
 
 fn get_whitespace_count_in_tag(data: String, start_pos: i32) -> i32 {
