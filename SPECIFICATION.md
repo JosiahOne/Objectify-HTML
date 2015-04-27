@@ -13,27 +13,27 @@ By default, objectify-html searches the directory you run it in for |.build|. Ba
 
 When the search happens, the files are looked at in order of how they appear in the .build file. Once the object is found, we stop searching. The locations are found by getting any substrings between '[' and ']'.
 File example:
----------------
-[file.ohtml]
-[dir/a.ohtml]
-[dir/b.ohtml]
----------------
+
+    [file.ohtml]
+    [dir/a.ohtml]
+    [dir/b.ohtml]
+
 ### 2.2 - HTML files
 
-Objects are inserted into HTML files using an |<include>| tag. The tag takes ONE parameter, and must be inserted with the inline closing format. |<foo bar="fizz"/>| not |<foo bar="fizz"></foo>|!
+Objects are inserted into HTML files using an `<include>` tag. The tag takes ONE parameter, and must be inserted with the inline closing format. `<foo bar="fizz"/>` not `<foo bar="fizz"></foo>`!
 
-You specify the specific object using the |object| attribute. Obviously, there must be a space between the "<include" and the "object=". So for example, a proper include would look like |<include object="foo"/>|.
+You specify the specific object using the |object| attribute. Obviously, there must be a space between the "`include`" and the "`object=`". So for example, a proper include would look like `<include object="foo"/>`.
 
 ### 2.3 - OHTML files
 
-OHTML files, or Object-based Hyper Text Markup Language, actually defines the subsitutions. You create .ohtml files and reference them in your .build file. Objects are created by inserting the HTML in an <begin> tag along with the object attribute. In this case, you do NOT use inline closing tags, but instead </begin> at the end of the definition. For example:
--------------------------------------
-<begin object="foo">
-    <div class="thing"> Test </div>
-</begin>
--------------------------------------
+OHTML files, or Object-based Hyper Text Markup Language, actually defines the subsitutions. You create .ohtml files and reference them in your .build file. Objects are created by inserting the HTML in an `<begin>` tag along with the object attribute. In this case, you do NOT use inline closing tags, but instead `</begin>` at the end of the definition. For example:
 
-You can declare multiple objects in a file and you can insert <include> tags in the definitions.
+    <begin object="foo">
+        <div class="thing"> Test </div>
+    </begin>
+
+
+You can declare multiple objects in a file and you can insert `<include>` tags in the definitions.
 
 ### 2.4 - Command Syntax
 
