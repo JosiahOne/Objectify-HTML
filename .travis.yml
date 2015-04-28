@@ -1,2 +1,2 @@
 language: rust
-script: cd rust && cargo build --verbose && cargo test --verbose
+script: cd rust; cargo build --verbose; cargo test --verbose
