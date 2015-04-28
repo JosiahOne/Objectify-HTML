@@ -101,7 +101,7 @@ fn insert_substring_at_pos(some_string: String, substring: String, start_pos: i3
 fn remove_substring_at_pos(some_string: String, start_pos: i32, end_pos: i32) -> String {
     let mut new_string = some_string;
     
-    for i in start_pos..end_pos {
+    for _ in start_pos..end_pos {
         new_string.remove(start_pos as usize);
     }
     
