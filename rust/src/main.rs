@@ -31,23 +31,21 @@ fn main() {
             add_b_option = true;
         }
     }
-    // !!! EARLY RETURNS !!!
+
     // If a compile_option was not supplied, we can't continue.
     if compile_option == "" {
         println!("No compile (-c) option was supplied! Aborting.");
-        return;
+    } else {        
+        if build_option == "" {
+            build_option = ".build".to_string();
+        }
+        
+        let main_data = get_file_contents(&*compile_option); // :String
+    
+        let data_to_write = inline_replace_html_file(main_data, build_option);
+        
+        println!("{}", data_to_write);
     }
-    // !!! END EARLY RETURNS !!!
-    
-    if build_option == "" {
-        build_option = ".build".to_string();
-    }
-    
-    let main_data = get_file_contents(&*compile_option); // :String
-
-    let data_to_write = inline_replace_html_file(main_data, build_option);
-    
-    println!("{}", data_to_write);
 }
 
 fn inline_replace_html_file(main_data: String, build_loc: String) -> String {
@@ -139,7 +137,7 @@ fn get_new_data(replacement_id: String, build_loc: String) -> String {
     let build_file_contents = get_file_contents(&*build_loc);
     let files: Vec<String> = get_substrings_from_delims(build_file_contents, '[', ']');
     let mut some_valid_data;
-    let mut final_return_data = String::new();
+    let mut final_return_data = "ERROR".to_string();
     let mut flag = true;
     for each in files {
         if flag {
