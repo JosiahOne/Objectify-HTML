@@ -1,4 +1,6 @@
 # Objectify-HTML
+[![Build Status](https://travis-ci.org/JosiahOne/Objectify-HTML.svg?branch=parameters)](https://travis-ci.org/JosiahOne/Objectify-HTML)
+
 Objectify-HTML is composed of two primary tools for "compiling" objects/macros in HTML.:
 
 1. An Objective-HTML compiler written in rust that outputs a version of your site with the objects inserted into your pages.
