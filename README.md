@@ -7,7 +7,7 @@ Objectify-HTML is composed of two primary tools for "compiling" objects/macros i
 The javascript runtime compiler is recommended when your site will not be used by screenreaders or in other places where JS is not available.
 
 ## Why? ##
-Well frankly, this is kind of limited, so a valid question. This was something I developed because I needed it for work. I was working on a site that wasn't large enough to require me to use PHP-based dynamic webpages, but large enough that I quite a bit of code duplication. Generally this duplication is just accepted by web developers, but since I'm really more of a "software engineer" this really bothered me. This tool is what I use to simplify the implementation of my website. For example:
+This project is quite limited, so "why?" is a fair question. This was something I developed because I needed it for work. I was working on a site that wasn't large enough to require me to use PHP-based dynamic webpages, but large enough that I had quite a bit of code duplication. Generally this duplication is accepted by web developers, but since I'm really more of a "software engineer" this really bothered me. This tool is what I use to simplify the implementation of my website. For example:
 
 * I made my footer and header an object, since they were generally identical across the site, so there was no need to duplicate the HTML.
 * I use it to break down large HTML pages into several smaller ones. This makes it much easier to work with.
