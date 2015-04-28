@@ -43,19 +43,19 @@ fn main() {
         build_option = ".build".to_string();
     }
     
-    let main_file = get_file_contents(&*compile_option); // :String
+    let main_data = get_file_contents(&*compile_option); // :String
 
-    let data_to_write = inline_replace_html_file(main_file, build_option);
+    let data_to_write = inline_replace_html_file(main_data, build_option);
     
     println!("{}", data_to_write);
 }
 
-fn inline_replace_html_file(main_file: String, build_loc: String) -> String {
+fn inline_replace_html_file(main_data: String, build_loc: String) -> String {
     let mut index: i32 = 0;
     let mut tag_name;
     let mut new_data;
     let mut mut_main = String::new();
-    let mut alt_mut_main = main_file.clone();
+    let mut alt_mut_main = main_data.clone();
     let mut while_flag = true;
     while while_flag {
         if alt_mut_main == mut_main {
@@ -87,9 +87,9 @@ fn inline_replace_html_file(main_file: String, build_loc: String) -> String {
     return mut_main;
 }
 
-fn insert_substring_at_pos(main_string: String, substring: String, start_pos: i32 ) -> String {
+fn insert_substring_at_pos(some_string: String, substring: String, start_pos: i32 ) -> String {
     let mut indexer = start_pos;
-    let mut return_string = main_string.clone();
+    let mut return_string = some_string.clone();
     for car in substring.chars() {
         return_string.insert(indexer as usize, car);
         indexer += 1;
@@ -98,8 +98,8 @@ fn insert_substring_at_pos(main_string: String, substring: String, start_pos: i3
     return return_string;
 }
 
-fn remove_substring_at_pos(main_string: String, start_pos: i32, end_pos: i32) -> String {
-    let mut new_string = main_string;
+fn remove_substring_at_pos(some_string: String, start_pos: i32, end_pos: i32) -> String {
+    let mut new_string = some_string;
     
     for i in start_pos..end_pos {
         new_string.remove(start_pos as usize);
@@ -108,16 +108,16 @@ fn remove_substring_at_pos(main_string: String, start_pos: i32, end_pos: i32) ->
     return new_string;
 }
 
-fn get_total_tag_length(data: String, start_pos: i32) -> i32 {
-    let value = get_entire_tag(data.clone(), start_pos).len() as i32;
+fn get_total_tag_length(main_data: String, start_pos: i32) -> i32 {
+    let value = get_entire_tag(main_data.clone(), start_pos).len() as i32;
     return value;
 }
 
-fn get_entire_tag(data: String, start_pos: i32) -> String {
+fn get_entire_tag(main_data: String, start_pos: i32) -> String {
     let mut indexer = 0;
     let mut return_data = String::new();
     let mut flag = true;
-    for car in data.chars() {
+    for car in main_data.chars() {
       
         if indexer >= start_pos && flag {
             if car == '>' {
@@ -208,13 +208,13 @@ fn get_replacement_data(file_contents: String, start_pos: i32) -> String {
     return read_data;
 }
 
-fn get_substrings_from_delims(main_string: String, start_delim: char, end_delim: char) -> Vec<String> {
+fn get_substrings_from_delims(some_string: String, start_delim: char, end_delim: char) -> Vec<String> {
     let mut substrings: Vec<String> = Vec::<String>::new();
     
     let mut currently_matching = false;
     let mut temp_data = String::new();
     
-    for car in main_string.chars() {
+    for car in some_string.chars() {
         if currently_matching && car != end_delim {
             temp_data.push_str(&*car.to_string());
         } else if car == end_delim {
@@ -231,13 +231,13 @@ fn get_substrings_from_delims(main_string: String, start_delim: char, end_delim:
     return substrings;
 }
 
-fn get_tag_name(input_data: String, start_index: i32) -> String {
+fn get_tag_name(main_data: String, start_index: i32) -> String {
     // Starting at the start_index, collect characters until we hit the ' '.
     
     let mut name = String::new();
     let mut counter = 0;
     
-    for car in input_data.chars() {
+    for car in main_data.chars() {
         if counter > start_index {
             if car != ' ' {
                 name.push_str(&*car.to_string());
@@ -251,7 +251,7 @@ fn get_tag_name(input_data: String, start_index: i32) -> String {
     return name;
 }
 
-fn get_replacement_id(input_data: String, start_index: i32) -> String {
+fn get_replacement_id(main_data: String, start_index: i32) -> String {
     // We're looking for object="foo". Specifically:
     // Check that the next 8 chars == object=" and then, 
     // Capture chars in a string until a " appears.
@@ -263,7 +263,7 @@ fn get_replacement_id(input_data: String, start_index: i32) -> String {
     let mut should_match = true;
     let mut should_continue = true;
     
-    for car in input_data.chars() {
+    for car in main_data.chars() {
         if counter > start_index && should_continue {
 
             if alt_counter + 1 > to_match.len() {
