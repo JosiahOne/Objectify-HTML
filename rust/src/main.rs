@@ -259,8 +259,19 @@ fn get_replacement_id(main_data: String, start_index: i32) -> String {
     return get_attribute(main_data.clone(), "object".to_string(), start_index);
 }
 
+// start_index should be the position of the opening '<' character.
 fn get_params(main_data: String, start_index: i32) -> ParamObject {
-    let mut params = ParamObject{param_name: vec!["".to_string()], param_content: vec!["".to_string()]};
+    let mut params = ParamObject{param_name: vec!["tag".to_string()], param_content: vec![get_tag_name(main_data.clone(), start_index)]};
+    let mut param_string = get_attribute(main_data.clone(), "params".to_string(), start_index);
+    let mut single_params = get_substrings_from_delims(param_string, '[', ']');
+    let mut indexer: u32 = 1;
+    
+    for each in single_params {
+        let name: String = "@p".to_string() + &*indexer.to_string() + "@";
+        params.param_name.push(name);
+        params.param_content.push(each);
+        indexer += 1;
+    }
     return params;
 }
 
@@ -350,6 +361,19 @@ fn get_substrings_from_delims_works() {
     let substrings = get_substrings_from_delims("[foo][bar]".to_string(), '[', ']');
     
     if substrings[0] != "foo".to_string() || substrings[1] != "bar".to_string() {
+        assert!(false);
+    }
+}
+
+#[test]
+fn get_params_works() {
+    let params = get_params("<div id=\"thing\" params=\"[foo][bar]\">".to_string(), 0);
+    
+    if params.param_name[1] != "@p1@".to_string() || params.param_content[1] != "foo".to_string() {
+        assert!(false);
+    }
+    
+    if params.param_name[2] != "@p2@".to_string() || params.param_content[2] != "bar".to_string() {
         assert!(false);
     }
 }
