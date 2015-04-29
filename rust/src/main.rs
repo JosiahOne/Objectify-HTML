@@ -9,6 +9,12 @@ struct ValidData {
     data: String,
 }
 
+struct ParamObject {
+    param_name: Vec<String>,
+    param_content: Vec<String>,
+}
+
+
 fn main() {
     let args: Vec<_> = env::args().collect();
     let mut compile_option = String::new();
@@ -250,37 +256,49 @@ fn get_tag_name(main_data: String, start_index: i32) -> String {
 }
 
 fn get_replacement_id(main_data: String, start_index: i32) -> String {
-    // We're looking for object="foo". Specifically:
-    // Check that the next 8 chars == object=" and then, 
-    // Capture chars in a string until a " appears.
-    
-    let mut label = String::new();
-    let mut counter = 0;
-    let mut alt_counter = 0;
-    let to_match = vec!['o', 'b', 'j', 'e', 'c', 't', '=', '"'];
-    let mut should_match = true;
-    let mut should_continue = true;
-    
-    for car in main_data.chars() {
-        if counter > start_index && should_continue {
+    return get_attribute(main_data.clone(), "object".to_string(), start_index);
+}
 
-            if alt_counter + 1 > to_match.len() {
-                // Start
-                should_match = false;
-                
-                if car == '"' {
+// start_index should be the position of the opening '<' character.
+fn get_params(main_data: String, start_index: i32) -> ParamObject {
+    let mut params = ParamObject{param_name: vec!["tag".to_string()], param_content: vec![get_tag_name(main_data.clone(), start_index)]};
+    let mut param_string = get_attribute(main_data.clone(), "params".to_string(), start_index);
+    let mut single_params = get_substrings_from_delims(param_string, '[', ']');
+    let mut indexer: u32 = 1;
+    
+    for each in single_params {
+        let name: String = "@p".to_string() + &*indexer.to_string() + "@";
+        params.param_name.push(name);
+        params.param_content.push(each);
+        indexer += 1;
+    }
+    return params;
+}
+
+fn get_attribute(some_string: String, attribute_name: String, start_index: i32) -> String {
+    // We're looking for attribute_name="foo". Specifically:
+    // Check that the next n chars == attribute_name=" and then, 
+    // Capture chars in a string until a " appears.
+    let mut indexer = 0;
+    let string_to_match = attribute_name.clone() + "=\"";
+    let mut chars_matched = 0;
+    let mut label = String::new();
+    
+    for car in some_string.chars() {
+        if indexer > start_index {
+            if chars_matched == string_to_match.len() {
+                if car == '"'{
                     break;
                 }
-                
                 label.push_str(&*car.to_string());
+            } else if car == string_to_match.chars().nth(chars_matched).unwrap() {
+                chars_matched += 1;
+            } else {
+                chars_matched = 0;
             }
-        
-            if should_match && car != to_match[alt_counter] {
-                should_continue = false;
-            }
-            alt_counter += 1;
         }
-        counter += 1;
+      
+        indexer += 1;
     }
     
     return label;
@@ -310,4 +328,52 @@ fn get_file_contents(p: &str) -> String {
     
     // `file` goes out of scope, and the "hello.txt" file gets closed
     return s;
+}
+
+///////////////////////////////////////
+/////////////// TESTS ////////////////
+//////////////////////////////////////
+
+#[test]
+fn it_works() {
+}
+
+#[test]
+fn get_attribute_works() {
+    let attribute = get_attribute("<div id=\"Test\">".to_string(), "id".to_string(), 0);
+    
+    if attribute != "Test" {
+        assert!(false);
+    }
+}
+
+#[test]
+fn get_tag_name_works() {
+    let tag_name = get_tag_name("<div id=\"Test\">".to_string(), 0);
+    
+    if tag_name != "div" {
+        assert!(false);
+    }
+}
+
+#[test]
+fn get_substrings_from_delims_works() {
+    let substrings = get_substrings_from_delims("[foo][bar]".to_string(), '[', ']');
+    
+    if substrings[0] != "foo".to_string() || substrings[1] != "bar".to_string() {
+        assert!(false);
+    }
+}
+
+#[test]
+fn get_params_works() {
+    let params = get_params("<div id=\"thing\" params=\"[foo][bar]\">".to_string(), 0);
+    
+    if params.param_name[1] != "@p1@".to_string() || params.param_content[1] != "foo".to_string() {
+        assert!(false);
+    }
+    
+    if params.param_name[2] != "@p2@".to_string() || params.param_content[2] != "bar".to_string() {
+        assert!(false);
+    }
 }
