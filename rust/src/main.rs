@@ -336,3 +336,20 @@ fn get_attribute_works() {
     }
 }
 
+#[test]
+fn get_tag_name_works() {
+    let tag_name = get_tag_name("<div id=\"Test\">".to_string(), 0);
+    
+    if tag_name != "div" {
+        assert!(false);
+    }
+}
+
+#[test]
+fn get_substrings_from_delims_works() {
+    let substrings = get_substrings_from_delims("[foo][bar]".to_string(), '[', ']');
+    
+    if substrings[0] != "foo".to_string() || substrings[1] != "bar".to_string() {
+        assert!(false);
+    }
+}
