@@ -318,3 +318,21 @@ fn get_file_contents(p: &str) -> String {
     // `file` goes out of scope, and the "hello.txt" file gets closed
     return s;
 }
+
+///////////////////////////////////////
+/////////////// TESTS ////////////////
+//////////////////////////////////////
+
+#[test]
+fn it_works() {
+}
+
+#[test]
+fn get_attribute_works() {
+    let attribute = get_attribute("<div id=\"Test\">".to_string(), "id".to_string(), 0);
+    
+    if attribute != "Test" {
+        assert!(false);
+    }
+}
+
