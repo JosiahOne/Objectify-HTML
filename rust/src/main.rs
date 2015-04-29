@@ -9,6 +9,12 @@ struct ValidData {
     data: String,
 }
 
+struct ParamObject {
+    param_name: Vec<String>,
+    param_content: Vec<String>,
+}
+
+
 fn main() {
     let args: Vec<_> = env::args().collect();
     let mut compile_option = String::new();
@@ -250,37 +256,38 @@ fn get_tag_name(main_data: String, start_index: i32) -> String {
 }
 
 fn get_replacement_id(main_data: String, start_index: i32) -> String {
-    // We're looking for object="foo". Specifically:
-    // Check that the next 8 chars == object=" and then, 
-    // Capture chars in a string until a " appears.
-    
-    let mut label = String::new();
-    let mut counter = 0;
-    let mut alt_counter = 0;
-    let to_match = vec!['o', 'b', 'j', 'e', 'c', 't', '=', '"'];
-    let mut should_match = true;
-    let mut should_continue = true;
-    
-    for car in main_data.chars() {
-        if counter > start_index && should_continue {
+    return get_attribute(main_data.clone(), "object".to_string(), start_index);
+}
 
-            if alt_counter + 1 > to_match.len() {
-                // Start
-                should_match = false;
-                
-                if car == '"' {
+fn get_params(main_data: String, start_index: i32) -> ParamObject {
+    let mut params = ParamObject{param_name: vec!["".to_string()], param_content: vec!["".to_string()]};
+    return params;
+}
+
+fn get_attribute(some_string: String, attribute_name: String, start_index: i32) -> String {
+    // We're looking for attribute_name="foo". Specifically:
+    // Check that the next n chars == attribute_name=" and then, 
+    // Capture chars in a string until a " appears.
+    let mut indexer = 0;
+    let string_to_match = attribute_name.clone() + "=\"";
+    let mut chars_matched = 0;
+    let mut label = String::new();
+    
+    for car in some_string.chars() {
+        if indexer > start_index {
+            if chars_matched == string_to_match.len() {
+                if car == '"'{
                     break;
                 }
-                
                 label.push_str(&*car.to_string());
+            } else if car == string_to_match.chars().nth(chars_matched).unwrap() {
+                chars_matched += 1;
+            } else {
+                chars_matched = 0;
             }
-        
-            if should_match && car != to_match[alt_counter] {
-                should_continue = false;
-            }
-            alt_counter += 1;
         }
-        counter += 1;
+      
+        indexer += 1;
     }
     
     return label;
