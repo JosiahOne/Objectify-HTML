@@ -103,7 +103,7 @@ fn insert_parameters(some_string: String, params: ParamContainer) -> String {
     for param in params.children {
         let find_index = get_first_location_of_string(some_string.clone(), param.param_name.clone());
         return_data = remove_substring_at_pos(some_string.clone(), find_index, find_index + param.param_name.clone().len() as i32);
-        return_data = insert_substring_at_pos(some_string.clone(), param.param_name.clone(), indexer as i32);
+        return_data = insert_substring_at_pos(return_data.clone(), param.param_content.clone(), find_index);
         
         indexer += 1;
     }
