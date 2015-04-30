@@ -98,14 +98,11 @@ fn inline_replace_html_file(main_data: String, build_loc: String) -> String {
 fn insert_parameters(some_string: String, params: ParamContainer) -> String {
     // Substitute in parameters and return the new string.
     let mut return_data = String::new();
-    let mut indexer = 0;
     
     for param in params.children {
         let find_index = get_first_location_of_string(some_string.clone(), param.param_name.clone());
         return_data = remove_substring_at_pos(some_string.clone(), find_index, find_index + param.param_name.clone().len() as i32);
         return_data = insert_substring_at_pos(return_data.clone(), param.param_content.clone(), find_index);
-        
-        indexer += 1;
     }
     
     return return_data;
@@ -118,7 +115,6 @@ fn get_first_location_of_string(main_data: String, substring: String) -> i32 {
     let mut indexer = 0;
     let string_to_match = substring;
     let mut chars_matched = 0;
-    let mut label = String::new();
     
     for car in main_data.chars() {
         if chars_matched == string_to_match.len() {
@@ -307,8 +303,8 @@ fn get_replacement_id(main_data: String, start_index: i32) -> String {
 // start_index should be the position of the opening '<' character.
 fn get_params(main_data: String, start_index: i32) -> ParamContainer {
     let mut params = ParamContainer{children: vec![ParamChild{param_name: "tag".to_string(), param_content: get_tag_name(main_data.clone(), start_index)}]};
-    let mut param_string = get_attribute(main_data.clone(), "params".to_string(), start_index);
-    let mut single_params = get_substrings_from_delims(param_string, '[', ']');
+    let param_string = get_attribute(main_data.clone(), "params".to_string(), start_index);
+    let single_params = get_substrings_from_delims(param_string, '[', ']');
     let mut indexer: u32 = 1;
     
     for each in single_params {
