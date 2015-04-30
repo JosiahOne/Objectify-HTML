@@ -98,7 +98,7 @@ fn inline_replace_html_file(main_data: String, build_loc: String) -> String {
 fn insert_parameters(some_string: String, params: ParamContainer) -> String {
     // Substitute in parameters and return the new string.
     let mut return_data = String::new();
-    let mut indexer = 1;
+    let mut indexer = 0;
     
     for param in params.children {
         let find_index = get_first_location_of_string(some_string.clone(), param.param_name.clone());
@@ -122,6 +122,7 @@ fn get_first_location_of_string(main_data: String, substring: String) -> i32 {
     
     for car in main_data.chars() {
         if chars_matched == string_to_match.len() {
+            indexer -= string_to_match.len() as i32;
             break;
         } else if car == string_to_match.chars().nth(chars_matched).unwrap() {
             chars_matched += 1;
@@ -382,7 +383,7 @@ fn it_works() {
 }
 
 #[test]
-fn get_attribute_works() {
+fn test_get_attribute() {
     let attribute = get_attribute("<div id=\"Test\">".to_string(), "id".to_string(), 0);
     
     if attribute != "Test" {
@@ -391,7 +392,7 @@ fn get_attribute_works() {
 }
 
 #[test]
-fn get_tag_name_works() {
+fn test_get_tag_name() {
     let tag_name = get_tag_name("<div id=\"Test\">".to_string(), 0);
     
     if tag_name != "div" {
@@ -400,7 +401,7 @@ fn get_tag_name_works() {
 }
 
 #[test]
-fn get_substrings_from_delims_works() {
+fn test_get_substrings_from_delims() {
     let substrings = get_substrings_from_delims("[foo][bar]".to_string(), '[', ']');
     
     if substrings[0] != "foo".to_string() || substrings[1] != "bar".to_string() {
@@ -409,7 +410,7 @@ fn get_substrings_from_delims_works() {
 }
 
 #[test]
-fn get_params_works() {
+fn test_get_params() {
     let params = get_params("<div id=\"thing\" params=\"[foo][bar]\">".to_string(), 0);
     
     if params.children[1].param_name != "@p1@".to_string() || params.children[1].param_content != "foo".to_string() {
@@ -417,6 +418,29 @@ fn get_params_works() {
     }
     
     if params.children[2].param_name != "@p2@".to_string() || params.children[2].param_content != "bar".to_string() {
+        assert!(false);
+    }
+}
+
+#[test]
+fn test_get_first_location_of_string() {
+    let loc = get_first_location_of_string("The quick brown fox jumped.".to_string(), "brown".to_string());
+    
+    if loc != 10 {
+        println!("Loc = {}", loc);
+        assert!(false);
+    }
+}
+
+#[test]
+fn test_insert_parameters() {
+    let string_to_test = "<div class=\"@p1@\"/>".to_string();
+    let params = ParamContainer{children: vec![ParamChild{param_name: "@p1@".to_string(), param_content: "foo".to_string()}]};
+    
+    let return_stuff = insert_parameters(string_to_test, params);
+    println!("Return value = {}", return_stuff);
+    
+    if return_stuff != "<div class=\"foo\"/>" {
         assert!(false);
     }
 }
