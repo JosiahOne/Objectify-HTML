@@ -94,22 +94,22 @@ fn inline_replace_html_file(main_data: String, build_loc: String) -> String {
     
     return mut_main;
 }
-/*
-fn insert_parameters(some_string: String, params: ParamObject) -> String {
+
+fn insert_parameters(some_string: String, params: ParamContainer) -> String {
     // Substitute in parameters and return the new string.
     let mut return_data = String::new();
     let mut indexer = 1;
     
-    for _ in 0..params.get_length() {
-        let find_index = get_first_location_of_string(some_string, params.param_name[indexer]);
-        return_data = remove_substring_at_pos(some_string.clone(), find_index, find_index + params.param_name[indexer].len() as i32);
-        return_data = insert_substring_at_pos(some_string.clone(), params.param_name[indexer], indexer as i32);
+    for param in params.children {
+        let find_index = get_first_location_of_string(some_string.clone(), param.param_name.clone());
+        return_data = remove_substring_at_pos(some_string.clone(), find_index, find_index + param.param_name.clone().len() as i32);
+        return_data = insert_substring_at_pos(some_string.clone(), param.param_name.clone(), indexer as i32);
         
         indexer += 1;
     }
     
     return return_data;
-}*/
+}
 
 fn get_first_location_of_string(main_data: String, substring: String) -> i32 {
     // We're looking for attribute_name="foo". Specifically:
