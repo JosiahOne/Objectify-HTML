@@ -9,11 +9,14 @@ struct ValidData {
     data: String,
 }
 
-struct ParamObject {
-    param_name: Vec<String>,
-    param_content: Vec<String>,
+struct ParamContainer {
+    children: Vec<ParamChild>,
 }
 
+struct ParamChild {
+    param_name: String,
+    param_content: String,
+}
 
 fn main() {
     let args: Vec<_> = env::args().collect();
@@ -74,6 +77,7 @@ fn inline_replace_html_file(main_data: String, build_loc: String) -> String {
                         // Get the replacement name.
                         let replacement_name = get_replacement_id(mut_main.clone(), index + tag_name.len() as i32 + 1);
                         let tag_length = get_total_tag_length(mut_main.clone(), index);
+                        let parameters = get_params(mut_main.clone(), index);
                         new_data = get_new_data(replacement_name, build_loc.clone());
                         if new_data != "ERROR" {
                             alt_mut_main = remove_substring_at_pos(mut_main.clone(), index, index + tag_length);
@@ -89,6 +93,47 @@ fn inline_replace_html_file(main_data: String, build_loc: String) -> String {
     }
     
     return mut_main;
+}
+
+fn insert_parameters(some_string: String, params: ParamContainer) -> String {
+    // Substitute in parameters and return the new string.
+    let mut return_data = String::new();
+    let mut indexer = 0;
+    
+    for param in params.children {
+        let find_index = get_first_location_of_string(some_string.clone(), param.param_name.clone());
+        return_data = remove_substring_at_pos(some_string.clone(), find_index, find_index + param.param_name.clone().len() as i32);
+        return_data = insert_substring_at_pos(return_data.clone(), param.param_content.clone(), find_index);
+        
+        indexer += 1;
+    }
+    
+    return return_data;
+}
+
+fn get_first_location_of_string(main_data: String, substring: String) -> i32 {
+    // We're looking for attribute_name="foo". Specifically:
+    // Check that the next n chars == attribute_name=" and then, 
+    // Capture chars in a string until a " appears.
+    let mut indexer = 0;
+    let string_to_match = substring;
+    let mut chars_matched = 0;
+    let mut label = String::new();
+    
+    for car in main_data.chars() {
+        if chars_matched == string_to_match.len() {
+            indexer -= string_to_match.len() as i32;
+            break;
+        } else if car == string_to_match.chars().nth(chars_matched).unwrap() {
+            chars_matched += 1;
+        } else {
+            chars_matched = 0;
+        }
+      
+        indexer += 1;
+    }
+    
+    return indexer;
 }
 
 fn insert_substring_at_pos(some_string: String, substring: String, start_pos: i32 ) -> String {
@@ -260,16 +305,15 @@ fn get_replacement_id(main_data: String, start_index: i32) -> String {
 }
 
 // start_index should be the position of the opening '<' character.
-fn get_params(main_data: String, start_index: i32) -> ParamObject {
-    let mut params = ParamObject{param_name: vec!["tag".to_string()], param_content: vec![get_tag_name(main_data.clone(), start_index)]};
+fn get_params(main_data: String, start_index: i32) -> ParamContainer {
+    let mut params = ParamContainer{children: vec![ParamChild{param_name: "tag".to_string(), param_content: get_tag_name(main_data.clone(), start_index)}]};
     let mut param_string = get_attribute(main_data.clone(), "params".to_string(), start_index);
     let mut single_params = get_substrings_from_delims(param_string, '[', ']');
     let mut indexer: u32 = 1;
     
     for each in single_params {
         let name: String = "@p".to_string() + &*indexer.to_string() + "@";
-        params.param_name.push(name);
-        params.param_content.push(each);
+        params.children.push(ParamChild{param_name: name, param_content: each });
         indexer += 1;
     }
     return params;
@@ -339,7 +383,7 @@ fn it_works() {
 }
 
 #[test]
-fn get_attribute_works() {
+fn test_get_attribute() {
     let attribute = get_attribute("<div id=\"Test\">".to_string(), "id".to_string(), 0);
     
     if attribute != "Test" {
@@ -348,7 +392,7 @@ fn get_attribute_works() {
 }
 
 #[test]
-fn get_tag_name_works() {
+fn test_get_tag_name() {
     let tag_name = get_tag_name("<div id=\"Test\">".to_string(), 0);
     
     if tag_name != "div" {
@@ -357,7 +401,7 @@ fn get_tag_name_works() {
 }
 
 #[test]
-fn get_substrings_from_delims_works() {
+fn test_get_substrings_from_delims() {
     let substrings = get_substrings_from_delims("[foo][bar]".to_string(), '[', ']');
     
     if substrings[0] != "foo".to_string() || substrings[1] != "bar".to_string() {
@@ -366,14 +410,37 @@ fn get_substrings_from_delims_works() {
 }
 
 #[test]
-fn get_params_works() {
+fn test_get_params() {
     let params = get_params("<div id=\"thing\" params=\"[foo][bar]\">".to_string(), 0);
     
-    if params.param_name[1] != "@p1@".to_string() || params.param_content[1] != "foo".to_string() {
+    if params.children[1].param_name != "@p1@".to_string() || params.children[1].param_content != "foo".to_string() {
         assert!(false);
     }
     
-    if params.param_name[2] != "@p2@".to_string() || params.param_content[2] != "bar".to_string() {
+    if params.children[2].param_name != "@p2@".to_string() || params.children[2].param_content != "bar".to_string() {
+        assert!(false);
+    }
+}
+
+#[test]
+fn test_get_first_location_of_string() {
+    let loc = get_first_location_of_string("The quick brown fox jumped.".to_string(), "brown".to_string());
+    
+    if loc != 10 {
+        println!("Loc = {}", loc);
+        assert!(false);
+    }
+}
+
+#[test]
+fn test_insert_parameters() {
+    let string_to_test = "<div class=\"@p1@\"/>".to_string();
+    let params = ParamContainer{children: vec![ParamChild{param_name: "@p1@".to_string(), param_content: "foo".to_string()}]};
+    
+    let return_stuff = insert_parameters(string_to_test, params);
+    println!("Return value = {}", return_stuff);
+    
+    if return_stuff != "<div class=\"foo\"/>" {
         assert!(false);
     }
 }
