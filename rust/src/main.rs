@@ -48,11 +48,11 @@ fn main() {
         if build_option == "" {
             build_option = ".build".to_string();
         }
-        
+
         let main_data = get_file_contents(&*compile_option); // :String
-    
+
         let data_to_write = inline_replace_html_file(main_data, build_option);
-        
+
         println!("{}", data_to_write);
     }
 }
@@ -64,6 +64,7 @@ fn inline_replace_html_file(main_data: String, build_loc: String) -> String {
     let mut mut_main = String::new();
     let mut alt_mut_main = main_data.clone();
     let mut while_flag = true;
+    
     while while_flag {
         if alt_mut_main == mut_main {
             while_flag = false;
@@ -423,7 +424,6 @@ fn test_get_first_location_of_string() {
     let loc = get_first_location_of_string("The quick brown fox jumped.".to_string(), "brown".to_string());
     
     if loc != 10 {
-        println!("Loc = {}", loc);
         assert!(false);
     }
 }
@@ -437,6 +437,41 @@ fn test_insert_parameters() {
     println!("Return value = {}", return_stuff);
     
     if return_stuff != "<div class=\"foo\"/>" {
+        assert!(false);
+    }
+}
+
+#[test]
+fn test_get_total_tag_length() {
+    let string_to_test = "<div foo=\"bar\">".to_string();
+    let return_number = get_total_tag_length(string_to_test, 0);
+    
+    if return_number != 15 {
+        assert!(false);
+    }
+    
+}
+
+#[test]
+fn test_get_replacement_id() {
+    let string_to_test = "<div object=\"foo\"/>".to_string();
+    let return_data = get_replacement_id(string_to_test.clone(), 0);
+    let return_data_2 = get_replacement_id(string_to_test.clone(), 1);
+    
+    if return_data != "foo".to_string() && return_data_2 != "foo".to_string() {
+        assert!(false);
+    }
+}
+
+#[test]
+fn test_get_file_contents() {
+    let file = "test.html".to_string();
+    let proper_response = "<html>\n  <body>\n    <include object=\"test\"/>\n  </body>\n</html>\n".to_string();
+    let return_data = get_file_contents(&*file);
+    
+    if return_data != proper_response {
+        print!("\n{}", proper_response);
+        print!("\n{}", return_data);
         assert!(false);
     }
 }
