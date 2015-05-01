@@ -48,11 +48,11 @@ fn main() {
         if build_option == "" {
             build_option = ".build".to_string();
         }
-        
+
         let main_data = get_file_contents(&*compile_option); // :String
-    
+
         let data_to_write = inline_replace_html_file(main_data, build_option);
-        
+
         println!("{}", data_to_write);
     }
 }
@@ -64,6 +64,7 @@ fn inline_replace_html_file(main_data: String, build_loc: String) -> String {
     let mut mut_main = String::new();
     let mut alt_mut_main = main_data.clone();
     let mut while_flag = true;
+    
     while while_flag {
         if alt_mut_main == mut_main {
             while_flag = false;
