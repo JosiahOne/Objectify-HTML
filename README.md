@@ -1,5 +1,5 @@
 # Objectify-HTML
-[![Build Status](https://travis-ci.org/JosiahOne/Objectify-HTML.svg?branch=parameters)](https://travis-ci.org/JosiahOne/Objectify-HTML)
+[![Build Status](https://travis-ci.org/JosiahOne/Objectify-HTML.svg?branch=parameters)](https://travis-ci.org/JosiahOne/Objectify-HTML) [![Coverage Status](https://coveralls.io/repos/JosiahOne/Objectify-HTML/badge.svg)](https://coveralls.io/r/JosiahOne/Objectify-HTML)
 
 Objectify-HTML is composed of two primary tools for "compiling" objects/macros in HTML.:
 
