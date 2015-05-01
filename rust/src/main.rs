@@ -142,6 +142,10 @@ fn get_first_location_of_string(main_data: String, substring: String) -> i32 {
 }
 
 fn insert_substring_at_pos(some_string: String, substring: String, start_pos: i32 ) -> String {
+    if start_pos >= some_string.len() as i32 {
+        return some_string;
+    }
+    
     let mut indexer = start_pos;
     let mut return_string = some_string.clone();
     for car in substring.chars() {
@@ -153,6 +157,10 @@ fn insert_substring_at_pos(some_string: String, substring: String, start_pos: i3
 }
 
 fn remove_substring_at_pos(some_string: String, start_pos: i32, end_pos: i32) -> String {
+    if start_pos >= some_string.len() as i32 {
+        return some_string;
+    }
+    
     let mut new_string = some_string;
     
     for _ in start_pos..end_pos + 1 {
