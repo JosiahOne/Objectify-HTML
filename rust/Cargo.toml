@@ -3,3 +3,10 @@ name = "objectify-html"
 version = "0.0.1"
 authors = ["root"]
 
+[lib]
+# The name of a target is the name of the library that will be generated. This
+# is defaulted to the name of the package or project.
+name = "objectify_lib"
+
+# This field points at where the crate is located, relative to the Cargo.toml.
+path = "src/lib.rs"

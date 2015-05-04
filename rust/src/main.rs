@@ -1,6 +1,8 @@
-extern crate objectify_html;
+#![crate_name = "objectify_html"]
 
-use objectify_html::*;
+extern crate objectify_lib;
+
+use objectify_lib::*;
 use std::env;
 
 fn main() {
