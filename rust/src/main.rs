@@ -80,6 +80,7 @@ fn inline_replace_html_file(main_data: String, build_loc: String) -> String {
                         let tag_length = get_total_tag_length(mut_main.clone(), index);
                         let parameters = get_params(mut_main.clone(), index);
                         new_data = get_new_data(replacement_name, build_loc.clone());
+                        new_data = insert_parameters(new_data, parameters);
                         if new_data != "ERROR" {
                             alt_mut_main = remove_substring_at_pos(mut_main.clone(), index, index + tag_length);
                             alt_mut_main = insert_substring_at_pos(alt_mut_main.clone(), new_data, index);
@@ -102,8 +103,10 @@ fn insert_parameters(some_string: String, params: ParamContainer) -> String {
     
     for param in params.children {
         let find_index = get_first_location_of_string(some_string.clone(), param.param_name.clone());
-        return_data = remove_substring_at_pos(some_string.clone(), find_index, find_index + param.param_name.clone().len() as i32);
-        return_data = insert_substring_at_pos(return_data.clone(), param.param_content.clone(), find_index);
+        if find_index >= 0 {
+            return_data = remove_substring_at_pos(some_string.clone(), find_index, find_index + param.param_name.clone().len() as i32 - 1);
+            return_data = insert_substring_at_pos(return_data.clone(), param.param_content.clone(), find_index);
+        }
     }
     
     return return_data;
@@ -113,6 +116,11 @@ fn get_first_location_of_string(main_data: String, substring: String) -> i32 {
     // We're looking for attribute_name="foo". Specifically:
     // Check that the next n chars == attribute_name=" and then, 
     // Capture chars in a string until a " appears.
+    
+    if substring == "" {
+        return -1;
+    }
+    
     let mut indexer = 0;
     let string_to_match = substring;
     let mut chars_matched = 0;
@@ -134,6 +142,10 @@ fn get_first_location_of_string(main_data: String, substring: String) -> i32 {
 }
 
 fn insert_substring_at_pos(some_string: String, substring: String, start_pos: i32 ) -> String {
+    if start_pos >= some_string.len() as i32 {
+        return some_string;
+    }
+    
     let mut indexer = start_pos;
     let mut return_string = some_string.clone();
     for car in substring.chars() {
@@ -145,10 +157,16 @@ fn insert_substring_at_pos(some_string: String, substring: String, start_pos: i3
 }
 
 fn remove_substring_at_pos(some_string: String, start_pos: i32, end_pos: i32) -> String {
+    if start_pos >= some_string.len() as i32 {
+        return some_string;
+    }
+    
     let mut new_string = some_string;
     
-    for _ in start_pos..end_pos {
-        new_string.remove(start_pos as usize);
+    for _ in start_pos..end_pos + 1 {
+        if new_string.len() > 0 {
+            new_string.remove(start_pos as usize);
+        }
     }
     
     return new_string;
@@ -255,7 +273,7 @@ fn get_replacement_data(file_contents: String, start_pos: i32) -> String {
 }
 
 fn get_substrings_from_delims(some_string: String, start_delim: char, end_delim: char) -> Vec<String> {
-    let mut substrings: Vec<String> = Vec::<String>::new();
+    let mut substrings: Vec<String> = vec![];
     
     let mut currently_matching = false;
     let mut temp_data = String::new();
@@ -404,6 +422,10 @@ fn test_get_substrings_from_delims() {
     if substrings[0] != "foo".to_string() || substrings[1] != "bar".to_string() {
         assert!(false);
     }
+    
+    if get_substrings_from_delims("[foo][bar]".to_string(), 'X', 'Z').len() != 0 {
+        assert!(false);
+    }
 }
 
 #[test]
@@ -472,6 +494,18 @@ fn test_get_file_contents() {
     if return_data != proper_response {
         print!("\n{}", proper_response);
         print!("\n{}", return_data);
+        assert!(false);
+    }
+}
+
+#[test]
+fn test_remove_substring_at_pos() {
+    let string_to_test = "Hello world. Testing 1 2 3.".to_string();
+    let expected_result = "Hell. Testing 1 2 3.".to_string();
+    let result = remove_substring_at_pos(string_to_test, 4, 10);
+    
+    if result != expected_result {
+        println!("{}", result);
         assert!(false);
     }
 }
