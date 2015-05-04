@@ -367,6 +367,10 @@ pub fn get_file_contents(p: &str) -> String {
 /////////////// TESTS ////////////////
 //////////////////////////////////////
 
+#[cfg(test)]
+mod test {
+    use super::*;
+    
     #[test]
     fn it_works() {
     }
@@ -434,8 +438,8 @@ pub fn get_file_contents(p: &str) -> String {
         
         let loc2 = get_first_location_of_string("The quick brown fox jumped.".to_string(), "Hello".to_string());
         let loc3 = get_first_location_of_string("".to_string(), "Thing".to_string());
-        
-        if loc2 != -1 && loc3 != -1 {
+        let loc4 = get_first_location_of_string("Testing 1 2 3.".to_string(), "".to_string());
+        if loc2 != -1 && loc3 != -1 && loc4 != -1 {
             assert!(false);
         }
     }
@@ -501,3 +505,4 @@ pub fn get_file_contents(p: &str) -> String {
             assert!(false);
         }
     }
+}
