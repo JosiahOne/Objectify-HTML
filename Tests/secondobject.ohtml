@@ -1,3 +1,6 @@
 <begin object="second-object">
     <div class="second-object-style"></div>
 </begin >
+<begin object="third-object">
+    <div class="@p1@"></div>
+</begin >
