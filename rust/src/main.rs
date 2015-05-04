@@ -46,10 +46,6 @@ fn main() {
 /////////////// TESTS ////////////////
 //////////////////////////////////////
 
-#[cfg(test)]
-mod test {
-    use objectify_html::*;
-
     #[test]
     fn it_works() {
     }
@@ -184,4 +180,3 @@ mod test {
             assert!(false);
         }
     }
-}
