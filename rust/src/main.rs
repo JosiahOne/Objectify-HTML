@@ -99,6 +99,15 @@ mod test {
     }
     
     #[test]
+    fn test_get_non_existing_params() {
+        let params = get_params("div id=\"thing\"/>".to_string(), 0);
+        
+        if params.children.len() != 1 {
+            assert!(false);
+        }
+    }
+    
+    #[test]
     fn test_get_first_location_of_string() {
         let loc = get_first_location_of_string("The quick brown fox jumped.".to_string(), "brown".to_string());
         

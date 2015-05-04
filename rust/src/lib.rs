@@ -46,7 +46,9 @@ pub fn inline_replace_html_file(main_data: String, build_loc: String) -> String 
                         let tag_length = get_total_tag_length(mut_main.clone(), index);
                         let parameters = get_params(mut_main.clone(), index);
                         new_data = get_new_data(replacement_name, build_loc.clone());
-                        new_data = insert_parameters(new_data, parameters);
+                        if parameters.children.len() > 1 {
+                            new_data = insert_parameters(new_data, parameters);
+                        }
                         if new_data != "ERROR" {
                             alt_mut_main = remove_substring_at_pos(mut_main.clone(), index, index + tag_length);
                             alt_mut_main = insert_substring_at_pos(alt_mut_main.clone(), new_data, index);
@@ -106,8 +108,8 @@ pub fn get_first_location_of_string(main_data: String, substring: String) -> i32
         indexer += 1;
     }
     
-    if !found {
-        indexer = -1;
+    if found != true {
+        return -1;
     }
     
     return indexer;
