@@ -124,10 +124,12 @@ fn get_first_location_of_string(main_data: String, substring: String) -> i32 {
     let mut indexer = 0;
     let string_to_match = substring;
     let mut chars_matched = 0;
+    let mut found = false;
     
     for car in main_data.chars() {
         if chars_matched == string_to_match.len() {
             indexer -= string_to_match.len() as i32;
+            found = true;
             break;
         } else if car == string_to_match.chars().nth(chars_matched).unwrap() {
             chars_matched += 1;
@@ -136,6 +138,10 @@ fn get_first_location_of_string(main_data: String, substring: String) -> i32 {
         }
       
         indexer += 1;
+    }
+    
+    if !found {
+        indexer = -1;
     }
     
     return indexer;
@@ -448,6 +454,13 @@ fn test_get_first_location_of_string() {
     if loc != 10 {
         assert!(false);
     }
+    
+    let loc2 = get_first_location_of_string("The quick brown fox jumped.".to_string(), "Hello".to_string());
+    let loc3 = get_first_location_of_string("".to_string(), "Thing".to_string());
+    
+    if loc2 != -1 && loc3 != -1 {
+        assert!(false);
+    }
 }
 
 #[test]
@@ -471,7 +484,6 @@ fn test_get_total_tag_length() {
     if return_number != 15 {
         assert!(false);
     }
-    
 }
 
 #[test]
@@ -492,10 +504,14 @@ fn test_get_file_contents() {
     let return_data = get_file_contents(&*file);
     
     if return_data != proper_response {
-        print!("\n{}", proper_response);
-        print!("\n{}", return_data);
         assert!(false);
     }
+}
+
+#[test]
+#[should_panic]
+fn test_get_non_existing_file_contents() {
+    let return_data = get_file_contents("a-non-existing-file.txt");
 }
 
 #[test]
@@ -505,7 +521,6 @@ fn test_remove_substring_at_pos() {
     let result = remove_substring_at_pos(string_to_test, 4, 10);
     
     if result != expected_result {
-        println!("{}", result);
         assert!(false);
     }
 }
